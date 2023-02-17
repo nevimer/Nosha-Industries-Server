@@ -208,7 +208,7 @@
 	visible_message(span_danger("[user] [hulk_verb]ed [src]!"), \
 					span_userdanger("[user] [hulk_verb]ed [src]!"), span_hear("You hear a sickening sound of flesh hitting flesh!"), null, user)
 	to_chat(user, span_danger("You [hulk_verb] [src]!"))
-	apply_damage(15, BRUTE, wound_bonus=10)
+	apply_damage(15, BRUTE)
 
 /mob/living/carbon/human/attack_hand(mob/user, list/modifiers)
 	if(..()) //to allow surgery to return properly.
@@ -346,7 +346,7 @@
 	var/obj/item/bodypart/affecting = get_bodypart(get_random_valid_zone(dam_zone))
 	var/armor = run_armor_check(affecting, MELEE, armour_penetration = user.armour_penetration)
 	var/attack_direction = get_dir(user, src)
-	apply_damage(damage, user.melee_damage_type, affecting, armor, wound_bonus = user.wound_bonus, bare_wound_bonus = user.bare_wound_bonus, sharpness = user.sharpness, attack_direction = attack_direction)
+	apply_damage(damage, user.melee_damage_type, affecting, armor, sharpness = user.sharpness, attack_direction = attack_direction)
 
 
 /mob/living/carbon/human/attack_animal(mob/living/simple_animal/user, list/modifiers)
@@ -362,7 +362,7 @@
 	var/obj/item/bodypart/affecting = get_bodypart(get_random_valid_zone(dam_zone))
 	var/armor = run_armor_check(affecting, MELEE, armour_penetration = user.armour_penetration)
 	var/attack_direction = get_dir(user, src)
-	apply_damage(damage, user.melee_damage_type, affecting, armor, wound_bonus = user.wound_bonus, bare_wound_bonus = user.bare_wound_bonus, sharpness = user.sharpness, attack_direction = attack_direction)
+	apply_damage(damage, user.melee_damage_type, affecting, armor, sharpness = user.sharpness, attack_direction = attack_direction)
 
 
 /mob/living/carbon/human/attack_slime(mob/living/simple_animal/slime/M, list/modifiers)
@@ -372,10 +372,8 @@
 	var/damage = rand(M.melee_damage_lower, M.melee_damage_upper)
 	if(!damage)
 		return
-	var/wound_mod = -45 // 25^1.4=90, 90-45=45
 	if(M.is_adult)
 		damage += rand(5, 10)
-		wound_mod = -90 // 35^1.4=145, 145-90=55
 
 	if(check_shields(M, damage, "the [M.name]"))
 		return FALSE
@@ -386,7 +384,7 @@
 
 	var/obj/item/bodypart/affecting = get_bodypart(get_random_valid_zone(dam_zone))
 	var/armor_block = run_armor_check(affecting, MELEE)
-	apply_damage(damage, BRUTE, affecting, armor_block, wound_bonus=wound_mod)
+	apply_damage(damage, BRUTE, affecting, armor_block)
 
 
 /mob/living/carbon/human/ex_act(severity, target, origin)
@@ -466,7 +464,7 @@
 		for(var/X in bodyparts)
 			var/obj/item/bodypart/BP = X
 			if(prob(probability) && !prob(getarmor(BP, BOMB)) && BP.body_zone != BODY_ZONE_HEAD && BP.body_zone != BODY_ZONE_CHEST)
-				BP.receive_damage(INFINITY, wound_bonus = CANT_WOUND) //Capped by proc
+				BP.receive_damage(INFINITY) //Capped by proc
 				BP.dismember()
 				max_limb_loss--
 				if(!max_limb_loss)
@@ -708,7 +706,58 @@
 		if(body_part.is_pseudopart) //don't show injury text for fake bodyparts; ie chainsaw arms or synthetic armblades
 			continue
 
-		body_part.check_for_injuries(src, combined_msg)
+		if(HAS_TRAIT(src, TRAIT_SELF_AWARE))
+			status = "[brutedamage] brute damage and [burndamage] burn damage"
+			if(!brutedamage && !burndamage)
+				status = "no damage"
+
+		else
+			if(body_part.type in hal_screwydoll)//Are we halucinating?
+				brutedamage = (hal_screwydoll[body_part.type] * 0.2)*limb_max_damage
+
+			if(brutedamage > 0)
+				status = body_part.light_brute_msg
+			if(brutedamage > (limb_max_damage*0.4))
+				status = body_part.medium_brute_msg
+			if(brutedamage > (limb_max_damage*0.8))
+				status = body_part.heavy_brute_msg
+			if(brutedamage > 0 && burndamage > 0)
+				status += " and "
+
+			if(burndamage > (limb_max_damage*0.8))
+				status += body_part.heavy_burn_msg
+			else if(burndamage > (limb_max_damage*0.2))
+				status += body_part.medium_burn_msg
+			else if(burndamage > 0)
+				status += body_part.light_burn_msg
+
+			if(status == "")
+				status = "OK"
+		var/no_damage
+		if(status == "OK" || status == "no damage")
+			no_damage = TRUE
+		var/isdisabled = ""
+		if(body_part.bodypart_disabled)
+			isdisabled = " is disabled"
+			if(no_damage)
+				isdisabled += " but otherwise"
+			else
+				isdisabled += " and"
+
+		var/broken = ""
+		if(body_part.check_bones() & CHECKBONES_BROKEN)
+			broken = " has a broken bone and"
+
+		combined_msg += "\t <span class='[no_damage ? "notice" : "warning"]'>Your [body_part.name][isdisabled][broken][self_aware ? " has " : " is "][status].</span>"
+
+		if(body_part.check_bones() & BP_BROKEN_BONES)
+			combined_msg += "\t [span_warning("Your [body_part.plaintext_zone] is broken!")]"
+
+		for(var/obj/item/I in body_part.embedded_objects)
+			if(I.isEmbedHarmless())
+				combined_msg += "\t <a href='?src=[REF(src)];embedded_object=[REF(I)];embedded_limb=[REF(body_part)]' class='warning'>There is \a [I] stuck to your [body_part.name]!</a>"
+			else
+				combined_msg += "\t <a href='?src=[REF(src)];embedded_object=[REF(I)];embedded_limb=[REF(body_part)]' class='warning'>There is \a [I] embedded in your [body_part.name]!</a>"
 
 	for(var/t in missing)
 		combined_msg += span_boldannounce("Your [parse_zone(t)] is missing!")

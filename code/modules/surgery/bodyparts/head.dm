@@ -16,9 +16,10 @@
 	max_stamina_damage = 100
 	wound_resistance = 5
 	disabled_wound_penalty = 25
-	scars_covered_by_clothes = FALSE
 	grind_results = null
 	is_dimorphic = TRUE
+
+	bodypart_flags = STOCK_BP_FLAGS_HEAD
 
 	var/mob/living/brain/brainmob //The current occupant.
 	var/obj/item/organ/internal/brain/brain //The brain organ

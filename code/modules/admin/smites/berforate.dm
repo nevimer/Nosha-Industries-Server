@@ -34,7 +34,6 @@
 
 	var/mob/living/carbon/dude = target
 	var/list/open_adj_turfs = get_adjacent_open_turfs(dude)
-	var/list/wound_bonuses = list(15, 70, 110, 250)
 
 	var/delay_per_shot = 1
 	var/delay_counter = 1

@@ -36,9 +36,6 @@
 	damage_type = BURN
 	armor_flag = BOMB
 	speed = 1.2
-	wound_bonus = 30
-	bare_wound_bonus = 30
-	wound_falloff_tile = -4
 	fire_stacks = 3
 
 /obj/projectile/bullet/incendiary/fire/on_hit(atom/target, blocked)
@@ -84,7 +81,7 @@
 			LAZYADD(launched_items, iter_item)
 		else if(isliving(iter))
 			var/mob/living/incineratee = iter
-			incineratee.take_bodypart_damage(0, damage, wound_bonus=wound_bonus, bare_wound_bonus=bare_wound_bonus)
+			incineratee.take_bodypart_damage(0, damage)
 			incineratee.adjust_fire_stacks(fire_stacks)
 
 #undef BACKBLAST_MAX_ITEM_KNOCKBACK
