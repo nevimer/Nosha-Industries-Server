@@ -42,5 +42,9 @@ endmap
 map runtimestation
 endmap
 
+map blueshift
+	votable
+endmap
+
 map multiz_debug
 endmap
