@@ -1,0 +1,5 @@
+Assets in this folder are from Burgerstation - https://github.com/BurgerLUA/burgerstation
+
+All code is licensed under CC BY-NC-SA 3.0 unless otherwise noted.
+
+All other assets including sprites and sounds are licensed under CC BY-SA 3.0 unless otherwise noted.

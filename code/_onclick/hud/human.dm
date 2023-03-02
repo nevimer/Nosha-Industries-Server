@@ -279,7 +279,7 @@
 	spacesuit.hud = src
 	infodisplay += spacesuit
 
-	healths = new /atom/movable/screen/healths()
+	healths = new /atom/movable/screen/healths/ekg()
 	healths.hud = src
 	infodisplay += healths
 

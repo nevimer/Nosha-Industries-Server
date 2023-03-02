@@ -554,10 +554,24 @@
 	layer = UI_DAMAGE_LAYER
 	plane = FULLSCREEN_PLANE
 
-/atom/movable/screen/healths
+/atom/movable/screen/healths/
 	name = "health"
 	icon_state = "health0"
 	screen_loc = ui_health
+	var/tracked_health
+
+/atom/movable/screen/healths/ekg
+	icon = 'burger/icons/hud/ecg.dmi'
+	icon_state = "5"
+	screen_loc = ui_health
+
+/atom/movable/screen/healths/ekg/Initialize(mapload)
+	. = ..()
+	filters = filter(type="outline", size=0.5, color = rgb(255, 255, 255))
+	var/image/white_line = new /image('burger/icons/hud/ecg.dmi', "line_overlay")
+	white_line.appearance_flags = src.appearance_flags | RESET_COLOR
+	white_line.blend_mode = BLEND_INSET_OVERLAY
+	add_overlay(white_line)
 
 /atom/movable/screen/healths/alien
 	icon = 'icons/hud/screen_alien.dmi'

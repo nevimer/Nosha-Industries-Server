@@ -736,39 +736,53 @@
 		clear_fullscreen("brute")
 
 /mob/living/carbon/update_health_hud(shown_health_amount)
+	var/atom/movable/screen/healths/ekg = hud_used.healths
 	if(!client || !hud_used?.healths)
 		return
 
 	if(stat == DEAD)
-		hud_used.healths.icon_state = "health7"
+		ekg.icon_state = "dead"
 		return
 
 	if(SEND_SIGNAL(src, COMSIG_CARBON_UPDATING_HEALTH_HUD, shown_health_amount) & COMPONENT_OVERRIDE_HEALTH_HUD)
 		return
-
+	var/tox = getToxLoss()
+	var/oxy = getOxyLoss()
+	var/brute = getBruteLoss()
+	var/burn = getFireLoss()
+	var/redsub = 255 - tox + oxy * 3
+	var/greensub = 255 - brute + burn + oxy * 3
+	var/bluesub = 255 - brute + burn + oxy * 3
+	if(shown_health_amount || health != ekg.tracked_health)
+		animate(ekg, color = COLOR_RED, time = 3 SECONDS, easing = BOUNCE_EASING)
+		animate(color = initial(color), time = 3 SECONDS, easing = BOUNCE_EASING)
+		ekg.tracked_health = shown_health_amount | health
+		animate(color = rgb(redsub, greensub, bluesub), easing = BOUNCE_EASING, time = 3 SECONDS)
 	if(shown_health_amount == null)
 		shown_health_amount = health
+//	ekg.maptext = MAPTEXT("[shown_health_amount == 100 ? null : num2text(shown_health_amount)]%")
+//	ekg.maptext_y = 32 - (shown_health_amount / 2)
 
 	if(shown_health_amount >= maxHealth)
-		hud_used.healths.icon_state = "health0"
+		ekg.icon_state = "5"
 
 	else if(shown_health_amount > maxHealth * 0.8)
-		hud_used.healths.icon_state = "health1"
+		ekg.icon_state = "5"
 
 	else if(shown_health_amount > maxHealth * 0.6)
-		hud_used.healths.icon_state = "health2"
+		ekg.icon_state = "4"
 
 	else if(shown_health_amount > maxHealth * 0.4)
-		hud_used.healths.icon_state = "health3"
+		ekg.icon_state = "3"
 
-	else if(shown_health_amount > maxHealth*0.2)
-		hud_used.healths.icon_state = "health4"
+	else if(shown_health_amount > maxHealth * 0.2)
+		ekg.icon_state = "2"
 
 	else if(shown_health_amount > 0)
-		hud_used.healths.icon_state = "health5"
+		ekg.icon_state = "1"
 
 	else
-		hud_used.healths.icon_state = "health6"
+		ekg.icon_state = "revivable"
 
 /mob/living/carbon/update_stamina_hud(shown_stamina_amount)
 	if(!client || !hud_used?.stamina)
