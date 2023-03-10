@@ -1035,6 +1035,12 @@ GLOBAL_LIST_EMPTY(cached_storage_typecaches)
 	toshow.client.screen |= boxes
 	toshow.client.screen |= closer
 	toshow.client.screen |= resolve_location.contents
+	boxes.filters |= list(
+		filter(type="blur", size = 12),
+	)
+
+	animate(boxes.filters[1], 0.2 SECONDS, size = 6)
+	animate(time = 0.2 SECONDS, size = 0)
 
 /**
  * Hide our storage from a mob.
@@ -1060,6 +1066,7 @@ GLOBAL_LIST_EMPTY(cached_storage_typecaches)
 	toshow.client.screen -= boxes
 	toshow.client.screen -= closer
 	toshow.client.screen -= resolve_location.contents
+	boxes.filters = null
 
 /datum/storage/proc/action_trigger(datum/signal_source, datum/action/source)
 	SIGNAL_HANDLER
