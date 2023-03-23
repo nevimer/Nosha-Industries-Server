@@ -117,8 +117,8 @@
 		return FALSE
 	if(!local_apc.cell)
 		return FALSE
-	local_apc.cell.use(amount)
-	return TRUE
+	if(local_apc.cell.use(amount))
+		return TRUE
 
 /**
  * Attempts to draw power directly from the APC's Powernet rather than the APC's battery. For high-draw machines, like the cell charger

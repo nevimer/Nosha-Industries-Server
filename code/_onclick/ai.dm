@@ -139,65 +139,65 @@
 /* Questions: Instead of an Emag check on every function, can we not add to airlocks onclick if emag return? */
 
 /* Atom Procs */
-/atom/proc/AICtrlClick()
+/atom/proc/AICtrlClick(mob/living/silicon/siliconuser)
 	return
-/atom/proc/AIAltClick(mob/living/silicon/ai/user)
-	AltClick(user)
+/atom/proc/AIAltClick(mob/living/silicon/siliconuser)
+	AltClick(siliconuser)
 	return
-/atom/proc/AIShiftClick()
+/atom/proc/AIShiftClick(mob/living/silicon/siliconuser)
 	return
-/atom/proc/AICtrlShiftClick()
+/atom/proc/AICtrlShiftClick(mob/living/silicon/siliconuser)
 	return
 
 /* Airlocks */
-/obj/machinery/door/airlock/AICtrlClick() // Bolts doors
+/obj/machinery/door/airlock/AICtrlClick(mob/living/silicon/siliconuser) // Bolts doors
 	if(obj_flags & EMAGGED)
 		return
 
-	toggle_bolt(usr)
+	toggle_bolt(siliconuser || usr)
 	add_hiddenprint(usr)
 
-/obj/machinery/door/airlock/AIAltClick() // Eletrifies doors.
+/obj/machinery/door/airlock/AIAltClick(mob/living/silicon/siliconuser) // Eletrifies doors.
 	if(obj_flags & EMAGGED)
 		return
 
 	if(!secondsElectrified)
-		shock_perm(usr)
+		shock_perm(siliconuser || usr)
 	else
-		shock_restore(usr)
+		shock_restore(siliconuser || usr)
 
-/obj/machinery/door/airlock/AIShiftClick()  // Opens and closes doors!
+/obj/machinery/door/airlock/AIShiftClick(mob/living/silicon/siliconuser)  // Opens and closes doors!
 	if(obj_flags & EMAGGED)
 		return
 
-	user_toggle_open(usr)
+	user_toggle_open(siliconuser || usr)
 	add_hiddenprint(usr)
 
-/obj/machinery/door/airlock/AICtrlShiftClick()  // Sets/Unsets Emergency Access Override
+/obj/machinery/door/airlock/AICtrlShiftClick(mob/living/silicon/siliconuser)  // Sets/Unsets Emergency Access Override
 	if(obj_flags & EMAGGED)
 		return
 
-	toggle_emergency(usr)
+	toggle_emergency(siliconuser || usr)
 	add_hiddenprint(usr)
 
 /* APC */
-/obj/machinery/power/apc/AICtrlClick() // turns off/on APCs.
+/obj/machinery/power/apc/AICtrlClick(mob/living/silicon/user) // turns off/on APCs.
 	if(can_use(usr, 1))
 		toggle_breaker(usr)
 
 /* AI Turrets */
-/obj/machinery/turretid/AIAltClick() //toggles lethal on turrets
+/obj/machinery/turretid/AIAltClick(mob/living/silicon/user) //toggles lethal on turrets
 	if(ailock)
 		return
 	toggle_lethal(usr)
 
-/obj/machinery/turretid/AICtrlClick() //turns off/on Turrets
+/obj/machinery/turretid/AICtrlClick(mob/living/silicon/user) //turns off/on Turrets
 	if(ailock)
 		return
 	toggle_on(usr)
 
 /* Holopads */
-/obj/machinery/holopad/AIAltClick(mob/living/silicon/ai/user)
+/obj/machinery/holopad/AIAltClick(mob/living/silicon/user)
 	hangup_all_calls()
 	add_hiddenprint(usr)
 

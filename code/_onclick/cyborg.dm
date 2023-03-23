@@ -109,7 +109,7 @@
 
 /obj/machinery/door/airlock/BorgCtrlShiftClick(mob/living/silicon/robot/user) // Sets/Unsets Emergency Access Override Forwards to AI code.
 	if(get_dist(src,user) <= user.interaction_range)
-		AICtrlShiftClick()
+		AICtrlShiftClick(user)
 	else
 		..()
 
@@ -119,7 +119,7 @@
 
 /obj/machinery/door/airlock/BorgShiftClick(mob/living/silicon/robot/user)  // Opens and closes doors! Forwards to AI code.
 	if(get_dist(src,user) <= user.interaction_range)
-		AIShiftClick()
+		AIShiftClick(user)
 	else
 		..()
 
